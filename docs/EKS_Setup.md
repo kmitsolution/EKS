@@ -1,4 +1,11 @@
-# EKS Lab Setup
+# EKS Lab Setup (using Region Virginia (us-east-1))
+
+<b> For Lab point of view we will setup the environment as per below diagram </b>
+
+<img src="https://github.com/kmitsolution/EKS/blob/main/images/EKS_Setup1.PNG" width =700 height=400 />
+
+
+<img src="https://github.com/kmitsolution/EKS/blob/main/images/EKS_Setup2.png" width =700 height=400 />
 
 ## Step 1:- Create a IAM user and EKS Role
    <ul>
@@ -11,7 +18,7 @@
   </ul>
 
 ## Step 2:- Create the ssh key pair
-       Create SSH key value pair
+       Create SSH key value pair ( I am creating a key pair as vdevops)
 
 ## Step 3:- Setup Command line Tools
 
@@ -42,10 +49,36 @@
  
  ## Step 3:- Create first EKS Cluster using eksctl
  
-## Step 2:-         
-<b> For Lab point of view we will setup the environment as per below diagram </b>
+ Create a yaml file to create EKS Cluster ( I have given file name as eks.yaml)
+ 
+         apiVersion: eksctl.io/v1alpha5
+         kind: ClusterConfig
 
-<img src="https://github.com/kmitsolution/EKS/blob/main/images/EKS_Setup1.PNG" width =700 height=400 />
+         metadata:
+           name: EKS-raman-cluster
+           region: us-east-1
 
+         nodeGroups:
+           - name: ng-1
+             instanceType: t2.small
+             desiredCapacity: 3
+             ssh: # use existing EC2 key
+               publicKeyName: vdevops
+ 
+ ## Step 4:- Run below commands w.r.t eksctl
+ 
+      # Find the available options for eksctl create cluster command
+      eksctl create cluster --help
+      # create cluster by using yaml config file (it will take 15-20 mins to create cluster )
+      eksctl create cluster -f eks.yaml
+      # Post cluster check
+       kubectl get nodes
+      # check there must be a /root/.kube/config file which refers to EKS Cluster
+      
+      # get cluster 
+          eksctl get cluster
+      # get node group details of the cluster
+          eksctl get nodegroup --cluster EKS-raman-cluster
+          
+      
 
-<img src="https://github.com/kmitsolution/EKS/blob/main/images/EKS_Setup2.png" width =700 height=400 />
