@@ -67,4 +67,79 @@ The cluster autoscaler automatically launches additional worker nodes if more re
         eksctl create nodegroup --config-file=eks-auto.yaml
         # Run below command to check the nodes get created or not
         kubectl get nodes
-        # Run below command to 
+        # Run below command to delete ng-1 node group
+        eksctl delete nodegroup -f eks.yaml --include="ng-1"
+        eksctl delete nodegroup -f eks.yaml --include="ng-1" --approve
+
+<b> Deploy the AutoScaler </b>
+    
+        kubectl apply -f https://raw.githubusercontent.com/kubernetes/autoscaler/master/cluster-autoscaler/cloudprovider/aws/examples/cluster-autoscaler-autodiscover.yaml
+
+<b> put required annotation to the deployment: </b>
+        
+        kubectl -n kube-system annotate deployment.apps/cluster-autoscaler cluster-autoscaler.kubernetes.io/safe-to-evict="false"
+
+<b> get the autoscaler image version:  </b>
+
+          open https://github.com/kubernetes/autoscaler/releases and get the latest release version matching your Kubernetes version, e.g. Kubernetes 1.14 => check for 1.14.n  where "n" is the latest release version. change cluster name (EKS-raman-cluster) and version of EKS
+          
+          kubectl -n kube-system edit deployment.apps/cluster-autoscaler
+
+
+# Create nginx-deployment.yaml
+
+        apiVersion: apps/v1
+
+        kind: Deployment
+
+        metadata:
+
+          name: test-autoscaler
+
+        spec:
+
+          selector:
+
+            matchLabels:
+
+              app: nginx
+
+          replicas: 1
+
+          template:
+
+            metadata:
+
+              labels:
+
+                service: nginx
+
+                app: nginx
+
+            spec:
+
+              containers:
+
+              - image: nginx
+
+                name: test-autoscaler
+
+                resources:
+
+                  limits:
+
+                    cpu: 300m
+
+                    memory: 512Mi
+
+                  requests:
+
+                    cpu: 300m
+
+                    memory: 512Mi
+
+              nodeSelector:
+
+                instance-type: spot
+
+
