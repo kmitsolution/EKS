@@ -142,4 +142,9 @@ The cluster autoscaler automatically launches additional worker nodes if more re
 
                 instance-type: spot
 
+<b> Check the Log details </b>
+
+      kubectl -n kube-system logs deployment.apps/cluster-autoscaler
+
+  
 
